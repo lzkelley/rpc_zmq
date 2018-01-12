@@ -1,0 +1,8 @@
+{
+  "name": "rpc_zmq",
+  "version": "0.1.0",
+  "description": "A Remote Process Call (RPC) library using ZeroMQ via TCP, for a python server and javascript client.",
+  "dependencies": {
+    "zeromq": "^4.6.0"
+  }
+}
