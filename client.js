@@ -28,7 +28,7 @@ class JSClient {
      * @param {str} port - Port to access on URI.
      * @param {int} timeout - Timeout interval in milliseconds.
      */
-    constructor(uri="127.0.0.1", port="3000", timeout=5000) {
+    constructor(uri="127.0.0.1", port="3000", timeout=5000, debug=false) {
         let addr = "tcp://" + uri + ":" + port;
         console.log("Initializing %s socket", SOCKET_TYPE);
         let socket = zmq.socket(SOCKET_TYPE);
@@ -38,6 +38,7 @@ class JSClient {
 
         this.addr = addr;
         this._socket = socket;
+        this._debug = debug;
         this._killer = null;
         this._timeout = timeout;
         this._payload_name = null;
@@ -145,6 +146,37 @@ class JSClient {
         }, this._timeout);
 
     }
+
+    _log(msg) {
+        if (this._debug) {
+            console.log(msg);
+        }
+    }
+
+}
+
+function getDateTime() {
+
+    var date = new Date();
+
+    var hour = date.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+
+    var min  = date.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+
+    var sec  = date.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+
+    var year = date.getFullYear();
+
+    var month = date.getMonth() + 1;
+    month = (month < 10 ? "0" : "") + month;
+
+    var day  = date.getDate();
+    day = (day < 10 ? "0" : "") + day;
+
+    return year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
 
 }
 
