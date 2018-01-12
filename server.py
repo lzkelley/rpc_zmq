@@ -141,9 +141,9 @@ class PyServer:
                 msg = self._recv()
                 more_count += 1
                 packet.append(msg)
-                self._log("\t{}: '{}'".format(count, msg), end=', ')
+                self._log("\t{}: '{}'".format(count, msg))
                 more = bool(self._socket.getsockopt(zmq.RCVMORE))
-                self._log("more = {}".format(str(more)))
+                self._log("\t\tmore = {}".format(str(more)))
 
                 if more_count > MORE_LIMIT:
                     err = "Count = {} > {}! breaking".format(
@@ -239,9 +239,5 @@ class PyServer:
         """
         if self._debug:
             _msg = "{}:: {}".format(str(datetime.now()), msg)
-            self._log(_msg)
+            print(_msg)
         return
-
-
-serv = PyServer()
-serv.run()
