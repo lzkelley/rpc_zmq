@@ -125,21 +125,27 @@ class JSClient {
         this._payload_func = func;
     }
 
+    stop() {
+        var stopFailed;
+        var self = this;
+        this._socket.on('message', function(msg) {
+          console.log("recieved: " + msg);
+          if (msg == "STOPPED") {
+              clearTimeout(self._killer);
+              console.log("Server successfully exited.")
+              // process.exit(0);
+              this._socket.send("STOP");
+          }
+        });
+
+        stopFailed = setTimeout(function() {
+            console.log("No stopped signal recieved!");
+            self._socket.close();
+            throw new Error("Connection timeout during stop signal!")
+        }, this._timeout);
+
+    }
+
 }
 
-jsc = new JSClient();
-jsc.run();
-
-setTimeout(function() {
-  console.log("Trying to add a payload...");
-  jsc.call("echo", "Hello", function (msg) {
-      console.log("Received: ", msg);
-  });
-}, 2000);
-
-setTimeout(function() {
-  console.log("Trying to add a payload...");
-  jsc.call("_echo", "Hello", function (msg) {
-      console.log("Received: ", msg);
-  });
-}, 4000);
+module.exports = JSClient;
