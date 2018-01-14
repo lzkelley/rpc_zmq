@@ -12,10 +12,10 @@ class PyServer:
 
     _BEAT_BOUNDS = [0.001, 1.0]   # seconds
     _PAYLOAD_STR = ":::"
-    _RUN_COUNT_LIMIT = 100
+    # _RUN_COUNT_LIMIT = 100  # seconds
 
     def __init__(self, uri="127.0.0.1", port="3000",
-                 type=zmq.PAIR, debug=False):
+                 type=zmq.PAIR, debug=False, file=None):
         """Class for communicating with a `JSClient` using ZeroMQ via TCP.
 
         Socket is initialized and open to connect upon initialization.
@@ -47,6 +47,7 @@ class PyServer:
 
         """
         self._debug = debug
+        self._file = file
         context = zmq.Context()
         self._log("Initializing '{}' socket".format(SOCKET_TYPE))
         socket = context.socket(SOCKET_TYPE)
@@ -86,10 +87,10 @@ class PyServer:
         while (not self._stop_flag):
             count = self._beat(count)
             time.sleep(beat)
-            if count > self._RUN_COUNT_LIMIT:
-                self._log("Breaking!  count = {} > {} count limit.".format(
-                    count, self._RUN_COUNT_LIMIT))
-                self._stop_flag = True
+            # if count > self._RUN_COUNT_LIMIT:
+            #     self._log("Breaking!  count = {} > {} count limit.".format(
+            #         count, self._RUN_COUNT_LIMIT))
+            #     self._stop_flag = True
 
         self._log("Heartbeat terminated.")
 
@@ -148,6 +149,7 @@ class PyServer:
                 if more_count > MORE_LIMIT:
                     err = "Count = {} > {}! breaking".format(
                         more_count, MORE_LIMIT)
+                    self._log(err)
                     raise RuntimeError(err)
 
             self._log("\tPacket collected")
@@ -237,7 +239,12 @@ class PyServer:
             Message to log and/or output.
 
         """
+        _msg = "{}:: {}".format(str(datetime.now()), msg)
         if self._debug:
-            _msg = "{}:: {}".format(str(datetime.now()), msg)
             print(_msg)
+
+        if (self._file is not None):
+            self._file.write(_msg + "\n")
+            self._file.flush()
+
         return
